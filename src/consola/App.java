@@ -1,5 +1,16 @@
 package consola;
 
+import java.io.IOException;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Properties;
+
+import oracle.jdbc.OracleDriver;
+
 public class App {
 
 	/*
@@ -38,8 +49,40 @@ public class App {
 		 		END;
 		 		/
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	private static Properties prop = new Properties();
+	
+	public static void main(String[] args) throws SQLException, IOException {
+		//Cargar el driver a la MVJ
+        DriverManager.registerDriver(new OracleDriver());
+        
+        //Leemos configuración de un fichero de propiedades
+        prop.load(App.class.getResourceAsStream("../configuracion/oracle.properties"));
+        
+		try(Connection conexion = App.getConexion()){
+			
+			String sql = "{call INSERTA_PEDIDO(?,?,?)}";
+			CallableStatement comando = conexion.prepareCall(sql);
+			
+			comando.setString(1, "Cliente1"); 
+			
+			LocalDate fecha_original = LocalDate.of(2015, Month.JUNE, 12);
+			java.sql.Date fecha = java.sql.Date.valueOf(fecha_original);
+			
+			comando.setDate(2, fecha);
+			comando.setString(3, "Pedido nuevo");
+			comando.execute();
+			comando.close();
 		
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
+	
+	private static Connection getConexion() throws SQLException{
+        return DriverManager.getConnection(
+                    prop.getProperty("url"), 
+                    prop.getProperty("usuario"), 
+                    prop.getProperty("pass"));
+    }
 }//finc class consola.App
