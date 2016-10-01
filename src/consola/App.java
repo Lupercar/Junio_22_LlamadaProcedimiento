@@ -5,6 +5,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLType;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Properties;
@@ -64,18 +65,31 @@ public class App {
         
 		try(Connection conexion = App.getConexion()){
 			
-			sql = "{call INSERTA_PEDIDO(?,?,?)}";
+//			//Proceso para add un Pedido
+//			sql = "{call INSERTA_PEDIDO(?,?,?)}";
+//			comando = conexion.prepareCall(sql);
+//			
+//			comando.setString(1, "Cliente1"); 
+//			
+//			LocalDate fecha_original = LocalDate.of(2015, Month.JUNE, 12);
+//			java.sql.Date fecha = java.sql.Date.valueOf(fecha_original);
+//			
+//			comando.setDate(2, fecha);
+//			comando.setString(3, "Pedido nuevo");
+//			comando.execute();
+		
+			//Función nos devuelve un nombre a partir del ID
+			sql = "{ ? = call NOMBRE_DE_CLIENTE (?)}"; 
 			comando = conexion.prepareCall(sql);
 			
-			comando.setString(1, "Cliente1"); 
+			comando.setInt(2, 1);
+			comando.registerOutParameter(1, java.sql.Types.VARCHAR); 
 			
-			LocalDate fecha_original = LocalDate.of(2015, Month.JUNE, 12);
-			java.sql.Date fecha = java.sql.Date.valueOf(fecha_original);
-			
-			comando.setDate(2, fecha);
-			comando.setString(3, "Pedido nuevo");
 			comando.execute();
 			
+			System.out.println("Nombre_Cliente con ID1 : " + 
+								comando.getString(1)); 
+							
 		
 		}catch (SQLException e) {
 			// TODO Auto-generated catch block
