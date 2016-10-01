@@ -51,6 +51,10 @@ public class App {
 	 */
 	private static Properties prop = new Properties();
 	
+	private static String sql = null; 
+	
+	private static CallableStatement comando = null; 
+	
 	public static void main(String[] args) throws SQLException, IOException {
 		//Cargar el driver a la MVJ
         DriverManager.registerDriver(new OracleDriver());
@@ -60,8 +64,8 @@ public class App {
         
 		try(Connection conexion = App.getConexion()){
 			
-			String sql = "{call INSERTA_PEDIDO(?,?,?)}";
-			CallableStatement comando = conexion.prepareCall(sql);
+			sql = "{call INSERTA_PEDIDO(?,?,?)}";
+			comando = conexion.prepareCall(sql);
 			
 			comando.setString(1, "Cliente1"); 
 			
@@ -71,11 +75,13 @@ public class App {
 			comando.setDate(2, fecha);
 			comando.setString(3, "Pedido nuevo");
 			comando.execute();
-			comando.close();
+			
 		
 		}catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally{
+			comando.close();
 		}
 	}
 	
